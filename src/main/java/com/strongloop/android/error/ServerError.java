@@ -45,9 +45,9 @@ public class ServerError extends Error {
         return new JSONObject(getResponseBodyAsString());
     }
 
-    public ErrorDetail getDetail() throws UnsupportedEncodingException, JSONException {
+    public ErrorInfo getResponseBodyAsInfo() throws UnsupportedEncodingException, JSONException {
         JSONObject errorObject = getResponseBodyAsJSON();
-        return ErrorDetail.parse(errorObject.optJSONObject("error"));
+        return ErrorInfo.parse(errorObject.optJSONObject("error"));
     }
 
     public org.apache.http.Header[] getHeader() {
