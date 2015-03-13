@@ -31,6 +31,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.strongloop.android.remoting.JsonUtil;
+import com.strongloop.android.error.ServerError;
 
 /**
  * A specific {@link Adapter} implementation for RESTful servers.
@@ -204,6 +205,15 @@ public class RestAdapter extends Adapter {
         client.request(verb, path, parameters, parameterEncoding, responseHandler);
     }
 
+    private ServerError wrap(int statusCode, Header[] headers, byte[] responseBody,
+                                         String charset, Throwable error) {
+        ServerError serverException = new ServerError(error);
+        serverException.setStatusCode(statusCode);
+        serverException.setHeader(headers);
+        serverException.setResponseBody(responseBody, charset);
+        return serverException;
+    }
+
     class CallbackHandler extends AsyncHttpResponseHandler {
         private final Callback callback;
 
@@ -242,7 +252,7 @@ public class RestAdapter extends Adapter {
                 }
                 Log.w(TAG, "HTTP request (string) failed: " + message);
             }
-            callback.onError(error);
+            callback.onError(wrap(statusCode, headers, responseBody, getCharset(), error));
         }
     }
 
@@ -273,8 +283,9 @@ public class RestAdapter extends Adapter {
                 }
                 Log.w(TAG, "HTTP request (binary) failed: " + message);
             }
-            callback.onError(error);
+            callback.onError(wrap(statusCode, headers, responseBody, getCharset(), error));
         }
+
 
         @Override
         public void onSuccess(int statusCode, Header[] headers, byte[] binaryData) {
