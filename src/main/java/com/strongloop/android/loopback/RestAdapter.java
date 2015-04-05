@@ -27,6 +27,18 @@ public class RestAdapter
         setAccessToken(loadAccessToken());
     }
 
+    public void setTimeout(int timeout) {
+        getClient().setTimeout(timeout);
+    }
+
+    public void setMaxConnections(int maxConnections) {
+        getClient().setMaxConnections(maxConnections);
+    }
+
+    public void setMaxRetriesAndTimeout(int retries, int timeout) {
+        getClient().setMaxRetriesAndTimeout(retries, timeout);
+    }
+
     public void setAccessToken(String accessToken) {
         saveAccessToken(accessToken);
         getClient().addHeader("Authorization", accessToken);
