@@ -1,5 +1,7 @@
 package com.strongloop.android.error;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,6 +12,8 @@ import java.util.Arrays;
  * The object represents HTTP Error raised from server (statusCode != 200)
  */
 public class ServerError extends Error {
+
+    private static final String TAG = ServerError.class.getSimpleName();
 
     private int statusCode;
     private byte[] responseBody;
@@ -60,9 +64,18 @@ public class ServerError extends Error {
 
     @Override
     public String toString() {
+        String body = null;
+        try {
+            body = getResponseBodyAsString();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to stringify body", e);
+        }
+        if (null == body) {
+            body = Arrays.toString(responseBody);
+        }
         return "ServerError{" +
                 "statusCode=" + statusCode +
-                ", responseBody=" + Arrays.toString(responseBody) +
+                ", responseBody=" + body +
                 ", header=" + Arrays.toString(header) +
                 ", charset='" + charset + '\'' +
                 '}';
